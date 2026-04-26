@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单户水表数据 - 张三</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #e6f7ff 0%, #b3e0ff 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #1e88e5 0%, #0d47a1 100%);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+        
+        .water-icon {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 40px;
+            opacity: 0.7;
+        }
+        
+        .back-btn {
+            position: absolute;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .content {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            border: 1px solid #e1f5fe;
+        }
+        
+        .card-title {
+            font-size: 18px;
+            color: #1565c0;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e3f2fd;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .meter-image-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .meter-image {
+            width: 100%;
+            max-width: 300px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #e1f5fe;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .image-label {
+            font-size: 12px;
+            color: #78909c;
+            margin-top: 5px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .info-label {
+            font-size: 13px;
+            color: #546e7a;
+        }
+        
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #37474f;
+        }
+        
+        .reading-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0d47a1;
+        }
+        
+        .reading-unit {
+            font-size: 14px;
+            color: #78909c;
+            margin-left: 5px;
+        }
+        
+        .consumption-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2e7d32;
+        }
+        
+        .consumption-change {
+            font-size: 13px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            display: inline-block;
+            width: fit-content;
+            margin-top: 5px;
+        }
+        
+        .change-up {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .change-down {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .change-neutral {
+            background-color: #f5f5f5;
+            color: #616161;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .status-normal {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .status-warning {
+            background-color: #fff3e0;
+            color: #ef6c00;
+        }
+        
+        .status-alert {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .usage-chart {
+            height: 150px;
+            margin-top: 20px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        
+        .chart-bar {
+            flex: 1;
+            background: #bbdefb;
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .chart-bar:hover {
+            background: #64b5f6;
+            transform: translateY(-5px);
+        }
+        
+        .chart-bar.current {
+            background: #1e88e5;
+        }
+        
+        .chart-label {
+            position: absolute;
+            bottom: -25px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 12px;
+            color: #546e7a;
+        }
+        
+        .chart-value {
+            position: absolute;
+            top: -25px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #1565c0;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            background: #1e88e5;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .action-btn:hover {
+            background: #1565c0;
+            transform: translateY(-2px);
+        }
+        
+        .action-btn.secondary {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .action-btn.secondary:hover {
+            background: #bbdefb;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+        
+        .note {
+            font-size: 13px;
+            color: #78909c;
+            margin-top: 15px;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            border-left: 3px solid #1e88e5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="#" class="back-btn">
+                <i class="fas fa-arrow-left"></i> 返回列表
+            </a>
+            <h1><i class="fas fa-tint"></i> 水表抄表数据</h1>
+            <p>户号：WT-2023001 | 户名：张三</p>
+            <div class="water-icon">
+                <i class="fas fa-faucet"></i>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-camera"></i> 水表照片</h2>
+                <div class="meter-image-container">
+                    <img src="https://images.unsplash.com/photo-1587493217545-1c0d753e5d5d?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="水表照片" class="meter-image" id="meterImage">
+                    <div class="image-label">点击图片查看大图</div>
+                </div>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">户号</span>
+                        <span class="info-value">WT-2023001</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">户名</span>
+                        <span class="info-value">张三</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">安装地址</span>
+                        <span class="info-value">幸福小区5栋302室</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">水表型号</span>
+                        <span class="info-value">LXS-15E</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">安装日期</span>
+                        <span class="info-value">2022-03-15</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">抄表员</span>
+                        <span class="info-value">王明</span>
+                    </div>
+                </div>
+                
+                <div class="note">
+                    <i class="fas fa-info-circle"></i> 最后抄表时间：2023-10-25 14:30
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-chart-bar"></i> 用水量数据</h2>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">当前读数</span>
+                        <span class="reading-value">245.6<span class="reading-unit">m³</span></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">上月读数</span>
+                        <span class="reading-value">238.2<span class="reading-unit">m³</span></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">本月用水量</span>
+                        <span class="consumption-value">7.4 m³</span>
+                        <span class="consumption-change change-down">↓ 比上月少1.2m³</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">用水状态</span>
+                        <span class="status status-normal">正常</span>
+                    </div>
+                </div>
+                
+                <h3 class="card-title" style="font-size: 16px; margin-top: 20px;"><i class="fas fa-chart-line"></i> 近6个月用水趋势</h3>
+                
+                <div class="usage-chart">
+                    <div class="chart-bar" style="height: 40%;">
+                        <span class="chart-value">5.2m³</span>
+                        <span class="chart-label">5月</span>
+                    </div>
+                    <div class="chart-bar" style="height: 55%;">
+                        <span class="chart-value">6.8m³</span>
+                        <span class="chart-label">6月</span>
+                    </div>
+                    <div class="chart-bar" style="height: 70%;">
+                        <span class="chart-value">8.6m³</span>
+                        <span class="chart-label">7月</span>
+                    </div>
+                    <div class="chart-bar" style="height: 85%;">
+                        <span class="chart-value">9.1m³</span>
+                        <span class="chart-label">8月</span>
+                    </div>
+                    <div class="chart-bar" style="height: 65%;">
+                        <span class="chart-value">7.2m³</span>
+                        <span class="chart-label">9月</span>
+                    </div>
+                    <div class="chart-bar current" style="height: 45%;">
+                        <span class="chart-value">7.4m³</span>
+                        <span class="chart-label">10月</span>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="action-btn">
+                        <i class="fas fa-edit"></i> 更新读数
+                    </button>
+                    <button class="action-btn secondary">
+                        <i class="fas fa-history"></i> 历史记录
+                    </button>
+                </div>
+                
+                <div class="note">
+                    <i class="fas fa-lightbulb"></i> 温馨提示：本月用水量比上月减少13.9%，请继续保持良好用水习惯。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 图片模态框 -->
+    <div id="imageModal" class="modal">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <script>
+        // 图片模态框功能
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImage');
+        const closeBtn = document.querySelector('.close');
+        const meterImage = document.getElementById('meterImage');
+        
+        meterImage.addEventListener('click', function() {
+            modal.style.display = 'flex';
+            modalImg.src = this.src;
+        });
+        
+        closeBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // 图表交互效果
+        document.querySelectorAll('.chart-bar').forEach(bar => {
+            bar.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+            
+            bar.addEventListener('mouseleave', function() {
+                if (!this.classList.contains('current')) {
+                    this.style.transform = 'translateY(0)';
+                }
+            });
+        });
+        
+        // 按钮点击效果
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (this.querySelector('.fa-edit')) {
+                    alert('更新读数功能即将实现！');
+                } else if (this.querySelector('.fa-history')) {
+                    alert('查看历史记录功能即将实现！');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

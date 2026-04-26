@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flask提交不刷新示例</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $("#submit-btn").click(function(){
+                $.ajax({
+                    url: '/submit',
+                    type: 'POST',
+                    data: $('#form').serialize(),
+                    success: function(response) {
+                        alert(response.message);
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <form id="form">
+        <input type="text" name="username">
+        <input type="submit" value="提交" id="submit-btn">
+    </form>
+</body>
+</html>
